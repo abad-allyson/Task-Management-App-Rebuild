@@ -68,7 +68,6 @@
           :items="tasks"
           hide-default-footer
           hide-no-data
-          class="px-8"
         >
           <template #item.actions="{ item }">
             <v-btn
