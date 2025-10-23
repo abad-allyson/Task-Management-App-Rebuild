@@ -172,6 +172,10 @@
 </template>
 
 <script setup>
+definePageMeta({
+  middleware: "auth",
+});
+
 const page = ref(1);
 const pages = ref(0);
 const pageRange = ref("-- - of --");

@@ -33,5 +33,5 @@
 const router = useRouter();
 
 const goToStudent = () => router.push("/student");
-const goToTask = () => router.push("/");
+const goToTask = () => router.push("/task");
 </script>

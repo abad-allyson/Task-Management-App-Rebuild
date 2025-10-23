@@ -5,6 +5,21 @@ import "vuetify/styles";
 import { createVuetify } from "vuetify";
 
 export default defineNuxtPlugin((app) => {
-  const vuetify = createVuetify({});
+  const vuetify = createVuetify({
+    defaults: {
+      VTextField: {
+        variant: "outlined",
+        density: "comfortable",
+      },
+      VTextarea: {
+        variant: "outlined",
+        density: "comfortable",
+      },
+      VDateInput: {
+        variant: "outlined",
+        density: "comfortable",
+      },
+    },
+  });
   app.vueApp.use(vuetify);
 });

@@ -26,4 +26,14 @@ export default defineNuxtConfig({
   routeRules: {
     "/api/**": { proxy: `${process.env.API}/api/**` },
   },
+
+  runtimeConfig: {
+    public: {
+      cookieConfig: {
+        domain: (process.env.DOMAIN as string) ?? "localhost",
+        secure: true,
+        maxAge: 30 * 24 * 60 * 60,
+      },
+    },
+  },
 });

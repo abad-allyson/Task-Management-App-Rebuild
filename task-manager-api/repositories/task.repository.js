@@ -2,9 +2,14 @@ import { db } from "../index.js";
 import { schemaTask, modelTask } from "../models/task.model.js";
 import { ObjectId } from "mongodb";
 import { paginate } from "../utils/paginate.util.js";
+import { logger } from "../utils/logger.util.js";
 
 export function useTaskRepo() {
   const collection = db.collection("tasks");
+  if (!db) {
+    console.log("Mongodb client is requred");
+    logger.log({ level: "error", message: "Mongodb client is requred" });
+  }
 
   // Create Indexes
   async function createTaskIndexes() {

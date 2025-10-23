@@ -1,32 +1,25 @@
 import { ObjectId } from "mongodb";
 import { db } from "../index.js";
-import { schemaStudent, modelStudent } from "../models/student.model.js";
+import { schemaUser, modelUser } from "../models/user.model.js";
 import { paginate } from "../utils/paginate.util.js";
 import { logger } from "../utils/logger.util.js";
 
-export function useStudentRepo() {
-  const collection = db.collection("students");
+export function useUserRepo() {
+  const collection = db.collection("users");
   if (!db) {
     console.log("Mongodb client is requred");
     logger.log({ level: "error", message: "Mongodb client is requred" });
   }
 
-  async function createStudentIndexes() {
+  async function createUserIndexes() {
     try {
       await collection.createIndexes([
-        { key: { firstName: 1 } },
-        { key: { middleName: 1 } },
-        { key: { lastName: 1 } },
-        { key: { birthDate: 1 } },
-        { key: { gradeLevel: 1 } },
+        { key: { email: 1 }, unique: true },
         {
           key: {
-            firstName: "text",
-            middleName: "text",
-            lastName: "text",
-            gradeLevel: "text",
+            email: "text",
           },
-          name: "studentTextSearch",
+          name: "emailTextSearch",
         },
       ]);
       return "Indexes created successfully.";
@@ -64,25 +57,39 @@ export function useStudentRepo() {
       const length = await collection.countDocuments(query);
       return paginate({ items, page, limit, length });
     } catch (error) {
-      throw new Error("Failed to get students: " + error.message);
+      throw new Error("Failed to get users: " + error.message);
     }
   }
 
   async function getById(id) {
     try {
-      return await collection.findOne();
+      id = new ObjectId(id);
     } catch (error) {
-      throw new Error("Failed to get id: " + error.message);
+      throw new Error("Invalid Id");
+    }
+
+    try {
+      return await collection.findOne({});
+    } catch (error) {
+      throw new Error("Failed to get by id: " + error.message);
+    }
+  }
+
+  async function getByEmail(email) {
+    try {
+      return await collection.findOne({ email });
+    } catch (error) {
+      throw new Error("Failed to get by email: " + error.message);
     }
   }
 
   async function add(value) {
     try {
-      value = modelStudent(value);
+      value = modelUser(value);
       await collection.insertOne(value);
-      return "Successfully added student";
+      return "Successfully added user";
     } catch (error) {
-      throw new Error("Failed to add students: " + error.message);
+      throw new Error("Failed to add users: " + error.message);
     }
   }
 
@@ -93,7 +100,7 @@ export function useStudentRepo() {
       throw new Error("Invalid Id");
     }
 
-    const { error } = schemaStudent.validate(value);
+    const { error } = schemaUser.validate(value);
     if (error) {
       throw new Error(
         "Validation failed: " + error.details.map((d) => d.message).join(", ")
@@ -102,7 +109,7 @@ export function useStudentRepo() {
 
     try {
       await collection.updateOne({ _id: id }, { $set: value });
-      return "Successfully updated student";
+      return "Successfully updated user";
     } catch (error) {}
   }
 
@@ -116,9 +123,17 @@ export function useStudentRepo() {
     try {
       await collection.deleteOne({ _id: id });
     } catch (error) {
-      throw new Error("Failed to delete students: " + error.message);
+      throw new Error("Failed to delete users: " + error.message);
     }
   }
 
-  return { getAll, getById, add, updateById, deleteById, createStudentIndexes };
+  return {
+    getAll,
+    getById,
+    add,
+    updateById,
+    deleteById,
+    createUserIndexes,
+    getByEmail,
+  };
 }
